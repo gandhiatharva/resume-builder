@@ -1,8 +1,14 @@
 import axios from 'axios'
 
+console.log(
+    "VITE_BASE_URL being used:",
+    import.meta.env.VITE_BASE_URL
+  )
+  
 const api = axios.create({
-    baseURL: import.meta.env.VITE_BASE_URL
-})
+    
+    baseURL: import.meta.env.VITE_BASE_URL,
+});
 
 export default api
 //api.js is a central configuration file for making HTTP requests from your React app to your backend.
