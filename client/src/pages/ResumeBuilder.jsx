@@ -36,15 +36,27 @@ const ResumeBuilder = () => {
   // the above is the intial value using which we initialize it 
 
   //supoose we have an an resume in url then we open that directly 
+  //its job is to fetch that resume from the backend and 
+  //load it into React state,populate the builder UI with saved data
   const loadExistingResume = async () => {
+    //This is an async function because it talks to the backend.
    try {
     const {data} = await api.get('/api/resumes/get/' + resumeId, {headers: { Authorization: token }})
+    //first we match the backend route so the backend knows which resume to fetch, who is requesting it 
+    //the resumeId we get from useParams(), 
+    //the autorization tokens ensures only the owner can load the resume and backend blocks
+    //unautorized access to resumes 
     if(data.resume){
+      //resume exists backend returned valid data
       setResumeData(data.resume)
+      //stores the resume in component state,automatically populates the Resume Builder UI
+      //All child components read from this state.
       document.title = data.resume.title;
+      //for  UX touch:browser tab shows resume title,helps when multiple tabs are open
     }
    } catch (error) {    
     console.log(error.message)
+    // to prevent app crash, logs error for debugging, 
    }
   }
 
@@ -94,6 +106,15 @@ const ResumeBuilder = () => {
       console.error("Error saving resume:", error)
     }
   }
+  //About FormData->
+  //What FormData actually is
+// FormData is a browser API used to send data in:  multipart/form-data
+// This format is required when: uploading files sending mixed data (files + text)
+// Even if you’re not uploading a file right now, the backend expects this format.
+//Json.stringigy is used because formdata needs to be strings and objects cannot be sent directly 
+
+
+
 
   const handleShare = () =>{
     const frontendUrl = window.location.href.split('/app/')[0];
@@ -111,23 +132,36 @@ const ResumeBuilder = () => {
     window.print();
   }
 
+//Saving all resume edits (text + optional image + optional background removal) to the backend in one request.
+// so it has to handle three diff cases, normal text then image uplaod and then image background removal 
 
 const saveResume = async () => {
   try {
     let updatedResumeData = structuredClone(resumeData)
+    //React state should never be mutated directly structuredClone creates a deep copy,You safely modify the copy before sending it
+    // so this creates an exact copy in which we can edit 
 
     // remove image from updatedResumeData
     if(typeof resumeData.personal_info.image === 'object'){
       delete updatedResumeData.personal_info.image
     }
+    //image is a file object which json cannot handle so we remove that portion
+    // and only send the json(text) portion ahead
+
 
     const formData = new FormData();
+    //FormData allows sending: text fields ,files,optional flags in one request (multipart/form-data)
     formData.append("resumeId", resumeId)
+    //this tells the backend which resume should be updated
     formData.append('resumeData', JSON.stringify(updatedResumeData))
+    //FormData only accepts strings or blobs so we use stringify 
     removeBackground && formData.append("removeBackground", "yes");
+    // if remove background clicked, then apply transformations 
     typeof resumeData.personal_info.image === 'object' && formData.append("image", resumeData.personal_info.image)
+    // if user uploaded image 
 
     const { data } = await api.put('/api/resumes/update', formData, {headers: { Authorization: token }})
+    // we send multi-part form data, passes jWT token, handled by multer 
 
     setResumeData(data.resume)
     toast.success(data.message)

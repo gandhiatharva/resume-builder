@@ -1,9 +1,5 @@
 import axios from 'axios'
 
-console.log(
-    "VITE_BASE_URL being used:",
-    import.meta.env.VITE_BASE_URL
-  )
   
 const api = axios.create({
     

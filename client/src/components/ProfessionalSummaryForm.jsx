@@ -14,8 +14,13 @@ const ProfessionalSummaryForm = ({data, onChange, setResumeData}) => {
     try {
       setIsGenerating(true)
       const prompt = `enhance my professional summary "${data}"`;
+      //data = current professional summary text written by user
+      // You are wrapping user content inside an instruction,This is what the AI will see
       const response = await api.post('/api/ai/enhance-pro-sum', {userContent: prompt}, {headers: { Authorization: token }})
+      //Handled by:aiRoutes.js → enhanceProfessionalSummary controller
       setResumeData(prev => ({...prev, professional_summary: response.data.enhancedContent}))
+      //prev = previous resumeData
+      //...prev = keep everything unchanged ,Only replace:professional_summary
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message)
     }

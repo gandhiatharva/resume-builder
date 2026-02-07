@@ -16,6 +16,7 @@ import pdfToText from 'react-pdftotext'
 const Dashboard = () => {
 
   const {user, token} = useSelector(state => state.auth)
+  //useSelector is a React-Redux hook that lets a component read data from the Redux store.
 
   const colors = ["#9333ea", "#d97706", "#dc2626", "#0284c7", "#16a34a"]
   const [allResumes, setAllResumes] = useState([])
@@ -49,6 +50,9 @@ const Dashboard = () => {
     event.preventDefault()
     // Stops the browser’s default behavior.
     const { data } = await api.post('/api/resumes/create', {title}, {headers: { Authorization: token }})
+    //It comes from your api.js file 
+    // we call api.post to tell backend to create a new resume with this title and the current loggedIn user 
+    //You are creating a new resume, so:/api/resumes/create
     //await will pause exectuion until response comes, without this data can be undefined 
     setAllResumes([...allResumes, data.resume])
     setTitle('')
@@ -63,12 +67,17 @@ const Dashboard = () => {
    }
   }
 
+
+  //This runs when the user submits the Upload Resume form
   const uploadResume = async (event) => {
     event.preventDefault()
     setIsLoading(true)
     try {
       const resumeText = await pdfToText(resume)
+      //resume = uploaded PDF file pdfToText reads the PDF on the client, Extracts raw text
       const { data } = await api.post('/api/ai/upload-resume', {title, resumeText}, {headers: { Authorization: token }})
+      // using this we send request to backend and await for its response, since we need to use ai in this we pass that route 
+      //a) Sends request to backend URL → /api/ai/upload-resume ,Body → resume title + extracted text, Header → JWT token
       setTitle('')
       setResume(null)
       setShowUploadResume(false)
@@ -78,11 +87,16 @@ const Dashboard = () => {
     }
     setIsLoading(false)
   }
+  //Upload an existing resume (PDF) → extract text → send it to AI 
+  //→ AI converts it into structured resume data → create a new resume → redirect to builder
 
   const editTitle = async (event) => {
     try {
       event.preventDefault()
       const {data} = await api.put(`/api/resumes/update`, {resumeId: editResumeId, resumeData: { title }}, {headers: { Authorization: token }})
+      //This matches your backend route:So this request will:pass through JWT authentication and reach the updateResume controller
+      // the resumeId and resumeData will  tells the backend: which resume to update (resumeId)what to update (title only)
+      // In headers we send the JWT token for backend to verify user idenitty 
       setAllResumes(allResumes.map(resume => resume._id === editResumeId ? { ...resume, title } : resume))
       setTitle('')
       setEditResumeId('')
@@ -90,7 +104,6 @@ const Dashboard = () => {
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message)
     }
-     
   }
 
   const deleteResume = async (resumeId) => {
