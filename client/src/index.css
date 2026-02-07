@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+@import "tailwindcss";
+
+*{
+  font-family: "Outfit", sans-serif;
+}
+
+@layer base {
+  button {
+    /* when you come on button you get cursor tag */
+    @apply cursor-pointer;
+  }
+    /* for all input fields we will apply these css properties that are given below */
+  input:not([type="checkbox"]){
+    @apply outline-none focus:ring border border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-lg;
+  }
+  textarea {
+    @apply outline-none focus:ring border border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-lg resize-none;
+  }
+}
+
+
+/* index.css file is used to provide css effects to all the pages in a file and not just one 
+so changes here will reflect all the pages there are in our program */
+
+
+
+
+
+
+
+
+
