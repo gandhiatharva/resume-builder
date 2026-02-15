@@ -24,8 +24,13 @@ await connectDB()
 
 app.use(express.json())
 //Parses incoming JSON request bodies Allows you to read req.body
+
+
+
 app.use(cors())
 //Enables Cross-Origin Resource Sharing Allows frontend (React) to call backend APIs
+
+
 
 app.get('/', (req, res)=> res.send("Server is live..."))
 //Simple endpoint to confirm server is running, used for testing 

@@ -86,6 +86,14 @@ const Dashboard = () => {
       toast.error(error?.response?.data?.message || error.message)
     }
     setIsLoading(false)
+
+
+//     console.log("TITLE:", title);
+// console.log("FILE:", resume);
+// const resumeText = await pdfToText(resume);
+// console.log("RESUME TEXT:", resumeText);
+// console.log("RESUME LENGTH:", resumeText?.length);
+
   }
   //Upload an existing resume (PDF) → extract text → send it to AI 
   //→ AI converts it into structured resume data → create a new resume → redirect to builder
